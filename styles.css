@@ -119,6 +119,13 @@ html, body {
   font-size: 24px;
 }
 
+.module-title .module-theme {
+  font-size: 15px;
+  font-weight: normal;
+  color: #868e96;
+  margin-left: 4px;
+}
+
 /* 模块配色 */
 .module-numbers {
   background: #fff5f7;
