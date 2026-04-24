@@ -456,21 +456,69 @@ html, body {
   cursor: pointer;
 }
 
-/* ===== 打印样式 ===== */
+/* ===== 打印贴士 ===== */
+.print-tips {
+  max-width: 900px;
+  margin: 16px auto 0;
+  padding: 12px 18px;
+  background: #fff3bf;
+  border: 2px dashed #ffd43b;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #5c3d00;
+  line-height: 1.9;
+  text-align: center;
+}
+
+.print-tips strong {
+  color: #e67700;
+  margin-right: 6px;
+}
+
+.print-tips .tip-item {
+  display: inline-block;
+  background: #fff;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 4px;
+  border: 1px solid #ffe8a8;
+}
+
+.print-tips .tip-item b {
+  color: #d9480f;
+}
+
+/* ===== 打印样式（精准锁定一张横向 A4） ===== */
 @media print {
   @page {
-    size: A4 landscape;
+    size: 297mm 210mm;
     margin: 0;
   }
 
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 297mm !important;
+    height: 210mm !important;
     background: #fff !important;
-    width: 297mm;
+    overflow: hidden;
   }
 
   .app {
-    padding: 0;
-    max-width: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    width: 297mm;
+  }
+
+  .pages {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .no-print {
@@ -478,22 +526,35 @@ html, body {
   }
 
   .spread {
-    display: none;
-    box-shadow: none;
-    border-radius: 0;
-    margin: 0;
-    width: 297mm;
-    height: 210mm;
+    display: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
     page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .spread.active {
-    display: flex;
+    display: flex !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: 297mm !important;
+    max-height: 210mm !important;
+    overflow: hidden !important;
+  }
+
+  .page {
+    height: 210mm !important;
+    max-height: 210mm !important;
+    overflow: hidden !important;
   }
 }
 
-/* ===== 窄屏适配：缩放 spread ===== */
-@media (max-width: 1220px) {
+/* ===== 窄屏适配：缩放 spread（仅屏幕，不影响打印） ===== */
+@media screen and (max-width: 1220px) {
   .spread {
     transform-origin: top left;
     transform: scale(0.9);
@@ -501,19 +562,19 @@ html, body {
   }
 }
 
-@media (max-width: 1100px) {
+@media screen and (max-width: 1100px) {
   .spread {
     transform: scale(0.8);
   }
 }
 
-@media (max-width: 980px) {
+@media screen and (max-width: 980px) {
   .spread {
     transform: scale(0.7);
   }
 }
 
-@media (max-width: 860px) {
+@media screen and (max-width: 860px) {
   .spread {
     transform: scale(0.6);
   }
