@@ -155,26 +155,49 @@ html, body {
 .numbers-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px 24px;
+  gap: 8px 20px;
 }
 
-.num-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.num-group {
   background: #fff;
   border-radius: 10px;
   padding: 6px 10px;
   border: 2px solid #ffe0ec;
 }
 
+.num-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.num-row.practice {
+  border-top: 2px dashed #ffd3e2;
+  margin-top: 2px;
+  padding-top: 6px;
+  position: relative;
+}
+
+.num-row.practice::before {
+  content: "✏️ 照着写";
+  position: absolute;
+  top: -11px;
+  left: 8px;
+  background: #fff;
+  font-size: 11px;
+  color: #ff8fab;
+  padding: 0 4px;
+  font-weight: normal;
+}
+
 .num-cell {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   color: #e64980;
 }

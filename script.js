@@ -38,14 +38,21 @@ function getNumbersForDay(day) {
   for (let i = 0; i < 10; i++) {
     list.push(start + i);
   }
-  // 每天预留 2 个空白格让孩子填写，位置随日变化
-  const blank1 = (day * 3) % 10;
-  let blank2 = (day * 7 + 5) % 10;
-  if (blank2 === blank1) blank2 = (blank2 + 1) % 10;
-  return list.map((n, idx) => ({
-    value: n,
-    blank: idx === blank1 || idx === blank2,
-  }));
+  // 每行 5 格中留 2 个空白（左右两行共 4 个），位置随日变化
+  const pickBlanks = (seedA, seedB) => {
+    const a = seedA % 5;
+    let b = seedB % 5;
+    if (b === a) b = (b + 1) % 5;
+    return new Set([a, b]);
+  };
+  const leftBlanks = pickBlanks(day * 3, day * 7 + 1);
+  const rightBlanks = pickBlanks(day * 5 + 2, day * 11 + 4);
+  return list.map((n, idx) => {
+    const inLeft = idx < 5;
+    const pos = inLeft ? idx : idx - 5;
+    const blank = inLeft ? leftBlanks.has(pos) : rightBlanks.has(pos);
+    return { value: n, blank };
+  });
 }
 
 /* ---------- 模块二：加法题（按"数字分解"思路，20 天循序渐进） ----------
@@ -205,10 +212,21 @@ function renderNumbers(day) {
     .map((n) => `<div class="num-cell ${n.blank ? "blank" : ""}">${n.blank ? "" : n.value}</div>`)
     .join("");
 
+  // 下方练习行：5 个空白格，让孩子照着上面写一遍
+  const practiceRow = Array(5)
+    .fill('<div class="num-cell blank"></div>')
+    .join("");
+
   return `
     <div class="numbers-grid">
-      <div class="num-row">${buildRow(col1)}</div>
-      <div class="num-row">${buildRow(col2)}</div>
+      <div class="num-group">
+        <div class="num-row">${buildRow(col1)}</div>
+        <div class="num-row practice">${practiceRow}</div>
+      </div>
+      <div class="num-group">
+        <div class="num-row">${buildRow(col2)}</div>
+        <div class="num-row practice">${practiceRow}</div>
+      </div>
     </div>
   `;
 }
