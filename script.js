@@ -274,12 +274,17 @@ function renderChars(day) {
 }
 
 /* ============================================================
- * 导航逻辑（按 spread 对开页，每页 2 天）
+ * 导航逻辑（桌面端按 spread 对开页，移动端按单天）
  * ============================================================ */
 const DAYS_PER_SPREAD = 2;
 const TOTAL_SPREADS = Math.ceil(TOTAL_DAYS / DAYS_PER_SPREAD);
 
 let currentSpread = 1;
+let currentMobileDay = 1;
+
+function isMobile() {
+  return window.innerWidth < 768;
+}
 
 function spreadDays(s) {
   const d1 = (s - 1) * DAYS_PER_SPREAD + 1;
@@ -290,44 +295,121 @@ function spreadDays(s) {
 function showSpread(s) {
   s = Math.max(1, Math.min(TOTAL_SPREADS, s));
   currentSpread = s;
+  const [d1, d2] = spreadDays(s);
 
-  document.querySelectorAll(".spread").forEach((el) => el.classList.remove("active"));
+  document.querySelectorAll(".spread").forEach((el) => {
+    el.classList.remove("active");
+    el.classList.remove("show-second");
+  });
   const target = document.querySelector(`.spread[data-spread="${s}"]`);
   if (target) target.classList.add("active");
 
-  const [d1, d2] = spreadDays(s);
-  document.getElementById("currentDay").textContent = d1 === d2 ? `${d1}` : `${d1}-${d2}`;
-  document.getElementById("prevBtn").disabled = s === 1;
-  document.getElementById("nextBtn").disabled = s === TOTAL_SPREADS;
-  document.getElementById("daySelect").value = String(s);
+  if (isMobile()) {
+    const isSecond = currentMobileDay === d2 && d1 !== d2;
+    if (isSecond && target) target.classList.add("show-second");
+    document.getElementById("currentDay").textContent = `${currentMobileDay}`;
+    document.getElementById("prevBtn").disabled = currentMobileDay === 1;
+    document.getElementById("nextBtn").disabled = currentMobileDay === TOTAL_DAYS;
+  } else {
+    document.getElementById("currentDay").textContent = d1 === d2 ? `${d1}` : `${d1}-${d2}`;
+    document.getElementById("prevBtn").disabled = s === 1;
+    document.getElementById("nextBtn").disabled = s === TOTAL_SPREADS;
+  }
 
-  if (location.hash !== `#spread=${s}`) {
-    history.replaceState(null, "", `#spread=${s}`);
+  document.getElementById("daySelect").value = isMobile() ? String(currentMobileDay) : String(s);
+
+  const hashVal = isMobile() ? `day=${currentMobileDay}` : `spread=${s}`;
+  if (location.hash !== `#${hashVal}`) {
+    history.replaceState(null, "", `#${hashVal}`);
   }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function initNav() {
-  document.getElementById("prevBtn").addEventListener("click", () => showSpread(currentSpread - 1));
-  document.getElementById("nextBtn").addEventListener("click", () => showSpread(currentSpread + 1));
-  document.getElementById("printBtn").addEventListener("click", () => window.print());
+function navigate(delta) {
+  if (isMobile()) {
+    currentMobileDay = Math.max(1, Math.min(TOTAL_DAYS, currentMobileDay + delta));
+    currentSpread = Math.ceil(currentMobileDay / DAYS_PER_SPREAD);
+    showSpread(currentSpread);
+  } else {
+    showSpread(currentSpread + delta);
+  }
+}
 
+function jumpTo(val) {
+  if (isMobile()) {
+    currentMobileDay = Math.max(1, Math.min(TOTAL_DAYS, val));
+    currentSpread = Math.ceil(currentMobileDay / DAYS_PER_SPREAD);
+    showSpread(currentSpread);
+  } else {
+    showSpread(val);
+  }
+}
+
+function buildSelect() {
   const sel = document.getElementById("daySelect");
   sel.innerHTML = "";
-  for (let s = 1; s <= TOTAL_SPREADS; s++) {
-    const [d1, d2] = spreadDays(s);
-    const opt = document.createElement("option");
-    opt.value = String(s);
-    opt.textContent = d1 === d2 ? `第 ${d1} 天` : `第 ${d1}-${d2} 天`;
-    sel.appendChild(opt);
+  if (isMobile()) {
+    for (let d = 1; d <= TOTAL_DAYS; d++) {
+      const opt = document.createElement("option");
+      opt.value = String(d);
+      opt.textContent = `第 ${d} 天`;
+      sel.appendChild(opt);
+    }
+  } else {
+    for (let s = 1; s <= TOTAL_SPREADS; s++) {
+      const [d1, d2] = spreadDays(s);
+      const opt = document.createElement("option");
+      opt.value = String(s);
+      opt.textContent = d1 === d2 ? `第 ${d1} 天` : `第 ${d1}-${d2} 天`;
+      sel.appendChild(opt);
+    }
   }
-  sel.addEventListener("change", (e) => showSpread(Number(e.target.value)));
+}
+
+function initNav() {
+  document.getElementById("prevBtn").addEventListener("click", () => navigate(-1));
+  document.getElementById("nextBtn").addEventListener("click", () => navigate(1));
+  document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+  buildSelect();
+  document.getElementById("daySelect").addEventListener("change", (e) => jumpTo(Number(e.target.value)));
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") showSpread(currentSpread - 1);
-    if (e.key === "ArrowRight") showSpread(currentSpread + 1);
+    if (e.key === "ArrowLeft") navigate(-1);
+    if (e.key === "ArrowRight") navigate(1);
   });
+
+  let prevMobile = isMobile();
+  window.addEventListener("resize", () => {
+    const nowMobile = isMobile();
+    if (nowMobile !== prevMobile) {
+      prevMobile = nowMobile;
+      buildSelect();
+      if (nowMobile) {
+        const [d1] = spreadDays(currentSpread);
+        currentMobileDay = d1;
+      } else {
+        currentSpread = Math.ceil(currentMobileDay / DAYS_PER_SPREAD);
+      }
+      showSpread(currentSpread);
+    }
+  });
+
+  // 支持手机左右滑动翻页
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      navigate(dx < 0 ? 1 : -1);
+    }
+  }, { passive: true });
 }
 
 /* ============================================================
@@ -439,12 +521,20 @@ function init() {
   initNav();
   initConfigPanel();
 
-  let startSpread = 1;
   const mSpread = location.hash.match(/spread=(\d+)/);
   const mDay = location.hash.match(/day=(\d+)/);
-  if (mSpread) startSpread = Number(mSpread[1]);
-  else if (mDay) startSpread = Math.ceil(Number(mDay[1]) / DAYS_PER_SPREAD);
-  showSpread(startSpread);
+
+  if (isMobile()) {
+    if (mDay) currentMobileDay = Number(mDay[1]);
+    else if (mSpread) currentMobileDay = spreadDays(Number(mSpread[1]))[0];
+    currentSpread = Math.ceil(currentMobileDay / DAYS_PER_SPREAD);
+  } else {
+    if (mSpread) currentSpread = Number(mSpread[1]);
+    else if (mDay) currentSpread = Math.ceil(Number(mDay[1]) / DAYS_PER_SPREAD);
+    currentMobileDay = spreadDays(currentSpread)[0];
+  }
+
+  showSpread(currentSpread);
 }
 
 document.addEventListener("DOMContentLoaded", init);
