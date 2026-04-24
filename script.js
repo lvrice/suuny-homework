@@ -171,7 +171,7 @@ function renderPage(day) {
   page.innerHTML = `
     <div class="page-header">
       第 ${day} 天 · 小小练习本
-      <span class="sub">加油！今天也要棒棒哒 🌟</span>
+      <span class="sub">加油！棒棒哒 🌟</span>
     </div>
 
     <div class="module module-numbers">
@@ -198,7 +198,7 @@ function renderPage(day) {
       ${renderChars(day)}
     </div>
 
-    <div class="page-footer">—— 第 ${day} / ${TOTAL_DAYS} 天 · 完成后请家长签字 ✍️ ——</div>
+    <div class="page-footer">第 ${day}/${TOTAL_DAYS} 天 · 家长签字 ✍️ ________</div>
   `;
   return page;
 }
@@ -245,19 +245,16 @@ function renderMath(day) {
 
 function renderLetters(day) {
   const letters = getLettersForDay(day);
+  const blanks = Array(3).fill('<div class="four-line blank"></div>').join("");
   return `
     <div class="letters-list">
       ${letters.map(({ upper, lower }) => `
         <div class="letter-row">
-          <div class="letter-label">${upper} ${lower}（大写 / 小写）</div>
+          <div class="letter-label">${upper} ${lower}</div>
           <div class="four-line-row">
             <div class="four-line demo">${upper}</div>
             <div class="four-line demo">${lower}</div>
-            <div class="four-line blank"></div>
-            <div class="four-line blank"></div>
-            <div class="four-line blank"></div>
-            <div class="four-line blank"></div>
-            <div class="four-line blank"></div>
+            ${blanks}
           </div>
         </div>
       `).join("")}
@@ -267,6 +264,7 @@ function renderLetters(day) {
 
 function renderChars(day) {
   const chars = getCharsForDay(day);
+  const blanks = Array(3).fill('<div class="mi-cell blank"></div>').join("");
   return `
     <div class="chars-list">
       ${chars.map((ch) => `
@@ -274,11 +272,7 @@ function renderChars(day) {
           <div class="char-label">${ch}</div>
           <div class="mi-cells">
             <div class="mi-cell demo">${ch}</div>
-            <div class="mi-cell blank"></div>
-            <div class="mi-cell blank"></div>
-            <div class="mi-cell blank"></div>
-            <div class="mi-cell blank"></div>
-            <div class="mi-cell blank"></div>
+            ${blanks}
           </div>
         </div>
       `).join("")}
@@ -287,48 +281,59 @@ function renderChars(day) {
 }
 
 /* ============================================================
- * 导航逻辑
+ * 导航逻辑（按 spread 对开页，每页 2 天）
  * ============================================================ */
 
-let currentDay = 1;
+const DAYS_PER_SPREAD = 2;
+const TOTAL_SPREADS = Math.ceil(TOTAL_DAYS / DAYS_PER_SPREAD);
 
-function showDay(day) {
-  day = Math.max(1, Math.min(TOTAL_DAYS, day));
-  currentDay = day;
+let currentSpread = 1;
 
-  document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-  const target = document.querySelector(`.page[data-day="${day}"]`);
+function spreadDays(s) {
+  const d1 = (s - 1) * DAYS_PER_SPREAD + 1;
+  const d2 = Math.min(d1 + 1, TOTAL_DAYS);
+  return [d1, d2];
+}
+
+function showSpread(s) {
+  s = Math.max(1, Math.min(TOTAL_SPREADS, s));
+  currentSpread = s;
+
+  document.querySelectorAll(".spread").forEach((el) => el.classList.remove("active"));
+  const target = document.querySelector(`.spread[data-spread="${s}"]`);
   if (target) target.classList.add("active");
 
-  document.getElementById("currentDay").textContent = String(day);
-  document.getElementById("prevBtn").disabled = day === 1;
-  document.getElementById("nextBtn").disabled = day === TOTAL_DAYS;
-  document.getElementById("daySelect").value = String(day);
+  const [d1, d2] = spreadDays(s);
+  document.getElementById("currentDay").textContent = d1 === d2 ? `${d1}` : `${d1}-${d2}`;
+  document.getElementById("prevBtn").disabled = s === 1;
+  document.getElementById("nextBtn").disabled = s === TOTAL_SPREADS;
+  document.getElementById("daySelect").value = String(s);
 
-  if (location.hash !== `#day=${day}`) {
-    history.replaceState(null, "", `#day=${day}`);
+  if (location.hash !== `#spread=${s}`) {
+    history.replaceState(null, "", `#spread=${s}`);
   }
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function initNav() {
-  document.getElementById("prevBtn").addEventListener("click", () => showDay(currentDay - 1));
-  document.getElementById("nextBtn").addEventListener("click", () => showDay(currentDay + 1));
+  document.getElementById("prevBtn").addEventListener("click", () => showSpread(currentSpread - 1));
+  document.getElementById("nextBtn").addEventListener("click", () => showSpread(currentSpread + 1));
   document.getElementById("printBtn").addEventListener("click", () => window.print());
 
   const sel = document.getElementById("daySelect");
-  for (let d = 1; d <= TOTAL_DAYS; d++) {
+  for (let s = 1; s <= TOTAL_SPREADS; s++) {
+    const [d1, d2] = spreadDays(s);
     const opt = document.createElement("option");
-    opt.value = String(d);
-    opt.textContent = `第 ${d} 天`;
+    opt.value = String(s);
+    opt.textContent = d1 === d2 ? `第 ${d1} 天` : `第 ${d1}-${d2} 天`;
     sel.appendChild(opt);
   }
-  sel.addEventListener("change", (e) => showDay(Number(e.target.value)));
+  sel.addEventListener("change", (e) => showSpread(Number(e.target.value)));
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") showDay(currentDay - 1);
-    if (e.key === "ArrowRight") showDay(currentDay + 1);
+    if (e.key === "ArrowLeft") showSpread(currentSpread - 1);
+    if (e.key === "ArrowRight") showSpread(currentSpread + 1);
   });
 }
 
@@ -337,14 +342,24 @@ function initNav() {
  * ============================================================ */
 function init() {
   const container = document.getElementById("pages");
-  for (let d = 1; d <= TOTAL_DAYS; d++) {
-    container.appendChild(renderPage(d));
+  for (let s = 1; s <= TOTAL_SPREADS; s++) {
+    const spread = document.createElement("section");
+    spread.className = "spread";
+    spread.dataset.spread = String(s);
+    const [d1, d2] = spreadDays(s);
+    spread.appendChild(renderPage(d1));
+    if (d2 !== d1) spread.appendChild(renderPage(d2));
+    container.appendChild(spread);
   }
   initNav();
 
-  const m = location.hash.match(/day=(\d+)/);
-  const startDay = m ? Number(m[1]) : 1;
-  showDay(startDay);
+  // URL hash 兼容 #spread=N 和旧的 #day=N
+  let startSpread = 1;
+  const mSpread = location.hash.match(/spread=(\d+)/);
+  const mDay = location.hash.match(/day=(\d+)/);
+  if (mSpread) startSpread = Number(mSpread[1]);
+  else if (mDay) startSpread = Math.ceil(Number(mDay[1]) / DAYS_PER_SPREAD);
+  showSpread(startSpread);
 }
 
 document.addEventListener("DOMContentLoaded", init);
