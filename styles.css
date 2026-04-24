@@ -456,6 +456,276 @@ html, body {
   cursor: pointer;
 }
 
+/* ===== 顶部栏右侧 ===== */
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-btn {
+  font-size: 22px;
+  background: none;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  background: #fff3bf;
+  border-color: #ffd43b;
+  transform: rotate(45deg);
+}
+
+/* ===== 配置面板 ===== */
+.config-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.config-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.config-card {
+  position: relative;
+  z-index: 1;
+  width: 540px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: configSlideIn 0.3s ease;
+}
+
+@keyframes configSlideIn {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background: linear-gradient(90deg, #ff6b9a, #ffa94d, #fcc419, #51cf66, #4dabf7);
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.config-close {
+  background: rgba(255,255,255,0.3);
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.config-close:hover {
+  background: rgba(255,255,255,0.5);
+}
+
+.config-body {
+  padding: 18px 22px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.config-group {
+  border: 2px solid;
+  border-radius: 14px;
+  padding: 12px 16px 10px;
+  margin: 0;
+}
+
+.config-group legend {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 0 8px;
+}
+
+.cg-numbers { border-color: #ffb3c6; background: #fff8fa; }
+.cg-numbers legend { color: #e64980; }
+
+.cg-math { border-color: #ffd43b; background: #fffdf0; }
+.cg-math legend { color: #f59f00; }
+
+.cg-letters { border-color: #63e6be; background: #f0fdf8; }
+.cg-letters legend { color: #12b886; }
+
+.cg-chars { border-color: #74c0fc; background: #f0f8ff; }
+.cg-chars legend { color: #1c7ed6; }
+
+.config-row {
+  margin-top: 8px;
+}
+
+.config-row > label {
+  display: block;
+  font-size: 13px;
+  color: #495057;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.config-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cfg-num {
+  width: 80px;
+  padding: 6px 10px;
+  font-size: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+  font-family: inherit;
+}
+
+.cfg-num:focus {
+  border-color: #4dabf7;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.15);
+}
+
+.cfg-select {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cfg-select:focus {
+  border-color: #4dabf7;
+  outline: none;
+}
+
+.cfg-select.cfg-letter {
+  width: 70px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.cfg-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1.5px solid #dee2e6;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+
+.cfg-check:has(input:checked) {
+  background: #fff3bf;
+  border-color: #ffd43b;
+}
+
+.cfg-check input { cursor: pointer; }
+
+.cfg-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  font-family: "KaiTi", "STKaiti", "楷体", "Microsoft YaHei", sans-serif;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.cfg-textarea:focus {
+  border-color: #4dabf7;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.15);
+}
+
+.config-hint {
+  font-size: 12px;
+  color: #868e96;
+  margin-top: 4px;
+}
+
+.config-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 14px 22px;
+  border-top: 1px solid #f1f3f5;
+  background: #f8f9fa;
+}
+
+.cfg-btn {
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.cfg-btn-reset {
+  background: #fff;
+  color: #868e96;
+  border: 2px solid #dee2e6;
+}
+
+.cfg-btn-reset:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.cfg-btn-apply {
+  background: linear-gradient(135deg, #51cf66, #40c057);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(64, 192, 87, 0.3);
+}
+
+.cfg-btn-apply:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(64, 192, 87, 0.4);
+}
+
 /* ===== 打印贴士 ===== */
 .print-tips {
   max-width: 900px;

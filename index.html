@@ -13,10 +13,89 @@
         <span class="brand-emoji">🌈</span>
         <span class="brand-title">我的 20 天小作业</span>
       </div>
-      <div class="page-indicator">
-        第 <span id="currentDay">1</span> 天 / 共 20 天
+      <div class="top-bar-right">
+        <div class="page-indicator">
+          第 <span id="currentDay">1</span> 天 / 共 20 天
+        </div>
+        <button id="settingsBtn" class="settings-btn" title="题目配置">⚙️</button>
       </div>
     </header>
+
+    <!-- 配置面板 -->
+    <div id="configPanel" class="config-panel no-print" style="display:none">
+      <div class="config-overlay" id="configOverlay"></div>
+      <div class="config-card">
+        <div class="config-header">
+          <span>⚙️ 题目配置</span>
+          <button id="configClose" class="config-close">&times;</button>
+        </div>
+        <div class="config-body">
+
+          <fieldset class="config-group cg-numbers">
+            <legend>🔢 模块一：数字书写</legend>
+            <div class="config-row">
+              <label>数字范围</label>
+              <div class="config-input-row">
+                <input type="number" id="cfgNumMin" min="1" max="999" value="1" class="cfg-num" /> —
+                <input type="number" id="cfgNumMax" min="1" max="999" value="100" class="cfg-num" />
+              </div>
+            </div>
+            <p class="config-hint">每天 10 个，按顺序循环</p>
+          </fieldset>
+
+          <fieldset class="config-group cg-math">
+            <legend>➕ 模块二：计算练习</legend>
+            <div class="config-row">
+              <label>运算范围</label>
+              <div class="config-input-row">
+                <select id="cfgMathMax" class="cfg-select">
+                  <option value="5">5 以内</option>
+                  <option value="10" selected>10 以内</option>
+                  <option value="20">20 以内</option>
+                  <option value="50">50 以内</option>
+                  <option value="100">100 以内</option>
+                </select>
+              </div>
+            </div>
+            <div class="config-row">
+              <label>运算类型</label>
+              <div class="config-input-row">
+                <label class="cfg-check"><input type="checkbox" id="cfgMathAdd" checked /> 加法</label>
+                <label class="cfg-check"><input type="checkbox" id="cfgMathSub" /> 减法</label>
+              </div>
+            </div>
+            <p class="config-hint">每天 10 道，按分解思路渐进</p>
+          </fieldset>
+
+          <fieldset class="config-group cg-letters">
+            <legend>🔤 模块三：英文字母</legend>
+            <div class="config-row">
+              <label>字母范围</label>
+              <div class="config-input-row">
+                <select id="cfgLetterStart" class="cfg-select cfg-letter"></select>
+                —
+                <select id="cfgLetterEnd" class="cfg-select cfg-letter"></select>
+              </div>
+            </div>
+            <p class="config-hint">每天 3 个，大小写，循环书写</p>
+          </fieldset>
+
+          <fieldset class="config-group cg-chars">
+            <legend>📝 模块四：汉字书写</legend>
+            <div class="config-row">
+              <label>自定义汉字（最多 60 个，用空格或逗号分隔）</label>
+              <textarea id="cfgCharsInput" class="cfg-textarea" rows="3" placeholder="示例：一 二 三 四 五 六 七 八 九 十"></textarea>
+            </div>
+            <p class="config-hint">每天 3 个；留空则使用默认字库</p>
+          </fieldset>
+
+        </div>
+        <div class="config-footer">
+          <button id="cfgReset" class="cfg-btn cfg-btn-reset">恢复默认</button>
+          <button id="cfgApply" class="cfg-btn cfg-btn-apply">✅ 应用并重新生成</button>
+        </div>
+      </div>
+    </div>
 
     <main id="pages" class="pages"></main>
 
