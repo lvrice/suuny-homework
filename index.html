@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的 20 天小作业 · 幼儿园中班</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar no-print">
+      <div class="brand">
+        <span class="brand-emoji">🌈</span>
+        <span class="brand-title">我的 20 天小作业</span>
+      </div>
+      <div class="page-indicator">
+        第 <span id="currentDay">1</span> 天 / 共 20 天
+      </div>
+    </header>
+
+    <main id="pages" class="pages"></main>
+
+    <nav class="bottom-nav no-print">
+      <button id="prevBtn" class="nav-btn prev">← 上一页</button>
+      <button id="printBtn" class="nav-btn print">🖨 打印本页</button>
+      <button id="nextBtn" class="nav-btn next">下一页 →</button>
+    </nav>
+
+    <div class="day-jump no-print">
+      <label for="daySelect">快速跳转：</label>
+      <select id="daySelect"></select>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
