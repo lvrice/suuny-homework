@@ -41,20 +41,7 @@ function getNumbersForDay(day) {
   for (let i = 0; i < perDay; i++) {
     list.push(min + (offset + i) % total);
   }
-  const pickBlanks = (seedA, seedB) => {
-    const a = seedA % 5;
-    let b = seedB % 5;
-    if (b === a) b = (b + 1) % 5;
-    return new Set([a, b]);
-  };
-  const leftBlanks = pickBlanks(day * 3, day * 7 + 1);
-  const rightBlanks = pickBlanks(day * 5 + 2, day * 11 + 4);
-  return list.map((n, idx) => {
-    const inLeft = idx < 5;
-    const pos = inLeft ? idx : idx - 5;
-    const blank = inLeft ? leftBlanks.has(pos) : rightBlanks.has(pos);
-    return { value: n, blank };
-  });
+  return list.map((n) => ({ value: n }));
 }
 
 /* ============================================================
@@ -203,7 +190,7 @@ function renderNumbers(day) {
   const col2 = nums.slice(5, 10);
 
   const buildRow = (list) => list
-    .map((n) => `<div class="num-cell ${n.blank ? "blank" : ""}">${n.blank ? "" : n.value}</div>`)
+    .map((n) => `<div class="num-cell">${n.value}</div>`)
     .join("");
 
   const practiceRow = Array(5)
