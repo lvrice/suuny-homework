@@ -104,8 +104,37 @@ function getMathThemeForDay(day) {
 }
 
 /* ============================================================
- * 模块三：英文字母
+ * 模块三：英文字母（每个字母配一个简单单词 + emoji）
  * ============================================================ */
+const LETTER_WORDS = {
+  A: { word: "Apple",    emoji: "🍎" },
+  B: { word: "Bear",     emoji: "🐻" },
+  C: { word: "Cat",      emoji: "🐱" },
+  D: { word: "Dog",      emoji: "🐶" },
+  E: { word: "Egg",      emoji: "🥚" },
+  F: { word: "Fish",     emoji: "🐟" },
+  G: { word: "Grape",    emoji: "🍇" },
+  H: { word: "Hat",      emoji: "🎩" },
+  I: { word: "Ice",      emoji: "🧊" },
+  J: { word: "Juice",    emoji: "🧃" },
+  K: { word: "Kite",     emoji: "🪁" },
+  L: { word: "Lion",     emoji: "🦁" },
+  M: { word: "Moon",     emoji: "🌙" },
+  N: { word: "Nose",     emoji: "👃" },
+  O: { word: "Orange",   emoji: "🍊" },
+  P: { word: "Pig",      emoji: "🐷" },
+  Q: { word: "Queen",    emoji: "👸" },
+  R: { word: "Rabbit",   emoji: "🐰" },
+  S: { word: "Sun",      emoji: "☀️" },
+  T: { word: "Tree",     emoji: "🌳" },
+  U: { word: "Umbrella", emoji: "☂️" },
+  V: { word: "Violin",   emoji: "🎻" },
+  W: { word: "Water",    emoji: "💧" },
+  X: { word: "Fox",      emoji: "🦊" },
+  Y: { word: "Yak",      emoji: "🐂" },
+  Z: { word: "Zebra",    emoji: "🦓" },
+};
+
 function getLettersForDay(day) {
   const start = CFG.letterStart;
   const end = CFG.letterEnd;
@@ -225,10 +254,12 @@ function renderMath(day) {
 
 function renderLetters(day) {
   const letters = getLettersForDay(day);
-  const blanks = Array(3).fill('<div class="four-line blank"></div>').join("");
+  const blanks = Array(3).fill('<div class="four-line diagonal"></div>').join("");
   return `
     <div class="letters-list">
-      ${letters.map(({ upper, lower }) => `
+      ${letters.map(({ upper, lower }) => {
+        const info = LETTER_WORDS[upper] || { word: "", emoji: "" };
+        return `
         <div class="letter-row">
           <div class="letter-label">${upper} ${lower}</div>
           <div class="four-line-row">
@@ -236,8 +267,10 @@ function renderLetters(day) {
             <div class="four-line demo">${lower}</div>
             ${blanks}
           </div>
+          <div class="letter-word">${info.emoji} ${info.word}</div>
+          <div class="word-line"></div>
         </div>
-      `).join("")}
+      `}).join("")}
     </div>
   `;
 }

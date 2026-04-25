@@ -277,8 +277,27 @@ html, body {
   color: #12b886;
   font-weight: bold;
   flex-shrink: 0;
-  min-width: 32px;
+  min-width: 26px;
   text-align: center;
+}
+
+.letter-word {
+  font-size: 11px;
+  font-weight: bold;
+  color: #087f5b;
+  flex-shrink: 0;
+  text-align: center;
+  font-family: "Sassoon Primary", "Century Gothic", "Trebuchet MS", sans-serif;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+.word-line {
+  flex: 1;
+  min-width: 40px;
+  height: 26px;
+  border-bottom: 2px solid #63e6be;
+  margin-left: 4px;
 }
 
 .four-line-row {
@@ -311,6 +330,26 @@ html, body {
 
 .four-line.demo { color: #12b886; }
 .four-line.blank { color: #cdd7e1; }
+
+.four-line.diagonal {
+  position: relative;
+  color: transparent;
+}
+
+.four-line.diagonal::before,
+.four-line.diagonal::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 141%;
+  height: 0;
+  border-top: 1px dashed #aaa;
+  transform-origin: center center;
+}
+
+.four-line.diagonal::before { transform: translate(-50%, -50%) rotate(45deg); }
+.four-line.diagonal::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 
 /* ===== 模块四：汉字（米字格） ===== */
 .chars-list {
@@ -1007,7 +1046,21 @@ html, body {
 
   .letter-label {
     font-size: 15px;
-    min-width: 40px;
+    min-width: 36px;
+  }
+
+  .letter-word {
+    font-size: 14px;
+    margin-left: 6px;
+  }
+
+  .word-line {
+    min-width: 50px;
+    height: 30px;
+  }
+
+  .letter-row {
+    flex-wrap: wrap;
   }
 
   .four-line-row { gap: 6px; }
